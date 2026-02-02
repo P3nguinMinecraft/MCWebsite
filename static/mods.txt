@@ -6,11 +6,10 @@ Carpet TIS Addition 1.75.1
 Chunky 1.4.55
 Cloth Config v20 21.11.153
 Concurrent Chunk Management Engine 0.3.7+alpha.0.7+1.21.11
-Discord Integration 3.1.0.1
 Discord Integration 3.1.0.2
 Fabric API 0.141.2+1.21.11
 Fabric Language Kotlin 1.13.8+kotlin.2.3.0
-Fast Noise Mod 1.0.8+1.21.11
+Fast Noise Mod 1.0.10+1.21.11
 FerriteCore 8.2.0
 Krypton 0.2.10
 Lithium 0.21.2+mc1.21.11
@@ -22,6 +21,6 @@ ServerCore 1.5.15+1.21.11
 Servux 0.9.1
 Simple Voice Chat 1.21.11-2.6.11
 StackDeobfuscator 1.4.3+08e71cc
-Very Many Players 0.2.0+beta.7.224+1.21.11
+Very Many Players 0.2.0+beta.7.226+1.21.11
 YetAnotherConfigLib 3.8.2+1.21.11-fabric
 spark 1.10.156
