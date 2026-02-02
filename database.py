@@ -47,11 +47,11 @@ def create_default_admin():
     db = get_db()
     cursor = db.execute('SELECT COUNT(*) FROM admins')
     count = cursor.fetchone()[0]
+    db.close()
     
     if count == 0:
         create_admin("admin", "pass123")
         print("<!> Default admin created. Change password <!>")
-    db.close()
     
 def create_admin(username, password):
     db = get_db()
