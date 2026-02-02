@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ config.server_name }}{% endblock %}
+
+{% block content %}
+<div class="about-section">
+    <div class="container">
+        <h1 class="page-title">Server Information</h1>
+        
+        <div class="info-grid">
+            <div class="info-card primary-info">
+                <h2 class="card-title">Server Details</h2>
+                <div class="info-row">
+                    <span class="info-label">Minecraft Version:</span>
+                    <span class="info-value">1.21.11</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Loader:</span>
+                    <span class="info-value">Fabric 0.18.4</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">IP:</span>
+                    <code class="info-code">{{ config.server_ip }}</code>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Hosting Location:</span>
+                    <span class="info-value">Chicago, USA</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2 class="card-title">Mods</h2>
+                <div class="mod-list">
+                    {% for mod in mods %}
+                    <div class="mod-item">{{ mod.name }} <span class="version">{{ mod.version }}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2 class="card-title">Gamerules</h2>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <code>player_movement_check</code>
+                        <span class="rule-value">false</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>elytra_movement_check</code>
+                        <span class="rule-value">false</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>players_sleeping_percentage</code>
+                        <span class="rule-value">1</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>ender_pearls_vanish_on_death</code>
+                        <span class="rule-value">false</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>fire_spread_radius_around_player</code>
+                        <span class="rule-value">-1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2 class="card-title">Carpet Rules</h2>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <code>optimizedFastEntityMovement</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>opPlayerNoCheat</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>antiCheatDisabled</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>defaultLoggers</code>
+                        <span class="rule-value">tps</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>placementRotationFix</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>optimizedTNT</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>smoothClientAnimations</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>lagFreeSpawning</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>viewDistance</code>
+                        <span class="rule-value">16</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>tickProfilerCommandsReintroduced</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>antiSpamDisabled</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                    <div class="rule-item">
+                        <code>accurateBlockPlacement</code>
+                        <span class="rule-value">true</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

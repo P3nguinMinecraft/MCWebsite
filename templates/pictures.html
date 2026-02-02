@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Pictures - {{ config.server_name }}{% endblock %}
+
+{% block content %}
+<div class="pictures-section">
+    <div class="container">
+        <h1 class="page-title">Server Gallery</h1>
+        
+        {% if images %}
+        <div class="gallery-grid">
+            {% for image in images %}
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='pictures/' + image) }}" 
+                     alt="{{ image }}" 
+                     loading="lazy"
+                     onclick="openLightbox('{{ url_for('static', filename='pictures/' + image) }}')">
+                <div class="image-name">{{ image }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-gallery">
+            <div class="empty-icon">🖼️</div>
+            <p>No pictures yet! Add images to the <code>static/pictures</code> folder.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="close-lightbox">&times;</span>
+    <img class="lightbox-content" id="lightbox-img">
+</div>
+
+<script>
+function openLightbox(src) {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    img.src = src;
+    lightbox.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeLightbox();
+    }
+});
+</script>
+{% endblock %}
