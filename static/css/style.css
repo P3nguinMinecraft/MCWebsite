@@ -75,15 +75,6 @@ body {
     text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
-.logo-icon {
-    font-size: 2rem;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
 
 .main-nav {
     display: flex;
@@ -517,16 +508,7 @@ body {
     filter: brightness(1.1);
 }
 
-.image-name {
-    padding: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--color-grass);
-    text-align: center;
-    background: rgba(15, 15, 26, 0.8);
-}
-
-.empty-gallery {
+.image-info {
     text-align: center;
     padding: 4rem 2rem;
     background: rgba(26, 26, 46, 0.4);
@@ -535,11 +517,6 @@ body {
     animation: fadeInUp 0.6s ease-out;
 }
 
-.empty-icon {
-    font-size: 5rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
 
 .empty-gallery p {
     color: var(--color-light);
@@ -655,5 +632,365 @@ body {
         top: 1rem;
         right: 1rem;
         font-size: 2rem;
+    }
+}
+
+/* Admin Login Styles */
+.admin-login-section {
+    padding: 4rem 0;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.login-card {
+    max-width: 450px;
+    margin: 0 auto;
+    background: rgba(26, 26, 46, 0.8);
+    border: 2px solid var(--color-grass);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(124, 179, 66, 0.2);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.login-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-grass));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.flash-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flash-success {
+    background: rgba(124, 179, 66, 0.2);
+    border: 1px solid var(--color-grass);
+    color: var(--color-grass);
+}
+
+.flash-error {
+    background: rgba(255, 87, 34, 0.2);
+    border: 1px solid var(--color-lava);
+    color: var(--color-lava);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 1rem;
+    border: 2px solid rgba(124, 179, 66, 0.3);
+    border-radius: 10px;
+    background: rgba(15, 15, 26, 0.5);
+    color: var(--color-light);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-grass);
+    background: rgba(15, 15, 26, 0.8);
+    box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.1);
+}
+
+.login-btn {
+    background: linear-gradient(135deg, var(--color-grass), #689f38);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+    margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(124, 179, 66, 0.5);
+}
+
+.login-hint {
+    font-size: 0.85rem;
+    color: var(--color-accent) !important;
+    opacity: 1 !important;
+}
+
+/* Pictures Admin Controls */
+.pictures-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.admin-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+}
+
+.upload-btn {
+    background: linear-gradient(135deg, var(--color-grass), #689f38);
+    color: white;
+    box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 179, 66, 0.4);
+}
+
+.logout-btn {
+    background: rgba(255, 87, 34, 0.2);
+    border: 2px solid var(--color-lava);
+    color: var(--color-lava);
+}
+
+.logout-btn:hover {
+    background: rgba(255, 87, 34, 0.3);
+    transform: translateY(-2px);
+}
+
+.admin-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    background: rgba(124, 179, 66, 0.1);
+    border: 2px solid var(--color-grass);
+    color: var(--color-grass);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-link:hover {
+    background: rgba(124, 179, 66, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Gallery Item Updates */
+.gallery-item {
+    position: relative;
+}
+
+.image-info {
+    padding: 1rem;
+    background: rgba(15, 15, 26, 0.8);
+}
+
+.image-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.image-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-grass);
+    margin: 0;
+    flex: 1;
+    min-height: 1.5rem;
+}
+
+.image-title[contenteditable="true"] {
+    outline: 2px dashed var(--color-accent);
+    padding: 0.25rem;
+    border-radius: 4px;
+}
+
+.image-description {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--color-light);
+    opacity: 0.8;
+    margin: 0;
+    min-height: 1.2rem;
+}
+
+.image-description[contenteditable="true"] {
+    outline: 2px dashed var(--color-accent);
+    padding: 0.25rem;
+    border-radius: 4px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--color-light);
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn:hover {
+    background: rgba(124, 179, 66, 0.2);
+    color: var(--color-grass);
+}
+
+.save-btn:hover {
+    background: rgba(79, 195, 247, 0.2);
+    color: var(--color-diamond);
+}
+
+.cancel-btn:hover {
+    background: rgba(120, 144, 156, 0.2);
+    color: var(--color-stone);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 87, 34, 0.2);
+    color: var(--color-lava);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Lightbox Updates */
+.lightbox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 90%;
+}
+
+.lightbox-info {
+    background: rgba(26, 26, 46, 0.9);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    border: 2px solid var(--color-grass);
+    max-width: 600px;
+    width: 100%;
+}
+
+.lightbox-info h2 {
+    color: var(--color-grass);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.lightbox-info p {
+    color: var(--color-light);
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-success {
+    background: rgba(124, 179, 66, 0.95);
+    color: white;
+}
+
+.notification-error {
+    background: rgba(255, 87, 34, 0.95);
+    color: white;
+}
+
+.notification-info {
+    background: rgba(79, 195, 247, 0.95);
+    color: white;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: scale(0.9);
     }
 }
