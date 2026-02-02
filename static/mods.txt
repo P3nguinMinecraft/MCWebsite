@@ -15,7 +15,6 @@ Krypton 0.2.10
 Lithium 0.21.2+mc1.21.11
 ModernFix 5.25.2-build.4
 No Chat Reports 1.21.11-v2.18.0
-Noisium 2.8.3+mc1.21.11
 Packet Fixer 3.3.4
 ServerCore 1.5.15+1.21.11
 Servux 0.9.1
