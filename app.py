@@ -58,6 +58,11 @@ def load_mods():
     
     return mods
 
+@app.route('/discord')
+def discord_redirect():
+    """Redirect to Discord server"""
+    return redirect(CONFIG['discord_invite'])
+
 @app.route('/about')
 def about():
     mods = load_mods()
