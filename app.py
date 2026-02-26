@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -14,7 +14,7 @@ CONFIG = {
     'allowed_extensions': {'png', 'jpg', 'jpeg', 'gif', 'webp'},
     'max_file_size': 20 * 1024 * 1024,  # 20 MB
     'directories': {
-        'pictures': 'static/pictures',
+        'pictures': 'data/pictures',
         'mods': 'static/mods.txt'
     }
 }
@@ -62,6 +62,12 @@ def load_mods():
 def discord():
     """Redirect to Discord server"""
     return redirect(CONFIG['discord_invite'])
+
+@app.route('/data/pictures/<filename>')
+def serve_picture(filename):
+    """Serve images from data/pictures directory"""
+    pictures_path = os.path.join(app.root_path, 'data', 'pictures')
+    return send_from_directory(pictures_path, filename)
 
 @app.route('/about')
 def about():
