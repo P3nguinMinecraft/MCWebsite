@@ -111,6 +111,36 @@ def admin_logout():
     flash('Successfully logged out.', 'success')
     return redirect(url_for('pictures'))
 
+@app.route('/admin/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        username = session.get('admin_username')
+        
+        if not database.verify_admin(username, current_password):
+            flash('Current password is incorrect.', 'error')
+            return render_template('change_password.html', config=CONFIG)
+        
+        if new_password != confirm_password:
+            flash('New passwords do not match.', 'error')
+            return render_template('change_password.html', config=CONFIG)
+        
+        if len(new_password) < 4:
+            flash('Password must be at least 4 characters long.', 'error')
+            return render_template('change_password.html', config=CONFIG)
+        
+        if database.change_password(username, new_password):
+            flash('Password changed successfully!', 'success')
+            return redirect(url_for('pictures'))
+        else:
+            flash('Failed to change password.', 'error')
+    
+    return render_template('change_password.html', config=CONFIG)
+
 @app.route('/admin/upload', methods=['POST'])
 @login_required
 def upload_image():

@@ -118,3 +118,18 @@ def verify_admin(username, password):
     if result and check_password_hash(result['password_hash'], password):
         return True
     return False
+
+def change_password(username, new_password):
+    """Change admin password"""
+    db = get_db()
+    try:
+        db.execute(
+            'UPDATE admins SET password_hash = ? WHERE username = ?',
+            (generate_password_hash(new_password), username)
+        )
+        db.commit()
+        db.close()
+        return True
+    except:
+        db.close()
+        return False
