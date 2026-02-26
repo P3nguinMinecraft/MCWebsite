@@ -31,7 +31,6 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'admin_logged_in' not in session:
-            flash('Please log in to access this page.', 'error')
             return redirect(url_for('admin_login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -94,8 +93,15 @@ def pictures():
     is_admin = 'admin_logged_in' in session
     return render_template('pictures.html', config=CONFIG, images=images, is_admin=is_admin)
 
+@app.route('/admin')
+@login_required
+def admin_panel():
+    return render_template('admin.html', config=CONFIG)
+
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
+    if 'admin_logged_in' in session:
+        return redirect(url_for('admin_panel'))
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -104,7 +110,7 @@ def admin_login():
             session['admin_logged_in'] = True
             session['admin_username'] = username
             flash('Successfully logged in!', 'success')
-            return redirect(url_for('pictures'))
+            return redirect(url_for('admin_panel'))
         else:
             flash('Invalid credentials. Please try again.', 'error')
     

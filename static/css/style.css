@@ -1075,3 +1075,112 @@ body {
         transform: scale(0.9);
     }
 }
+
+/* Load More Button */
+.load-more-wrapper {
+    text-align: center;
+    padding: 2rem 0 1rem;
+}
+.load-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 2rem;
+    background: var(--color-primary, #7cb342);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.load-more-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.load-more-btn:active { transform: translateY(0); }
+
+/* Confirm Delete Modal */
+.confirm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.confirm-modal {
+    background: var(--color-surface, #1e1e1e);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    width: min(420px, 90vw);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.confirm-modal-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: #ef5350;
+}
+.confirm-modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.confirm-modal-text {
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+}
+.confirm-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+.confirm-btn {
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.confirm-btn:hover { opacity: 0.85; }
+.confirm-cancel {
+    background: rgba(255,255,255,0.1);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.confirm-delete {
+    background: #ef5350;
+    color: white;
+}
+
+/* Admin Panel Page */
+.admin-panel-section {
+    padding: 4rem 0;
+    min-height: 60vh;
+}
+.admin-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.admin-panel-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Admin nav link accent */
+.nav-link-admin {
+    color: var(--color-primary, #7cb342) !important;
+    font-weight: 700;
+}
