@@ -32,6 +32,19 @@ Visit: http://localhost:8000/admin/login
 
 **CHANGE THIS PASSWORD IMMEDIATELY!**
 
+## Features
+- Upload images through web interface with drag-and-drop support
+- Change admin password from the gallery page
+- Edit image titles and descriptions inline
+- Delete images from the gallery
+- Discord redirect at `/discord`
+- Images stored in `data/pictures` directory
+
+## File Structure
+- `data/pictures/` - Image gallery storage
+- `data/server.db` - SQLite database for admin accounts and image metadata
+- `static/mods.txt` - Server mod list
+
 ### 5. Production
 Run the website with a WSGI server like gunicorn:
 ```bash

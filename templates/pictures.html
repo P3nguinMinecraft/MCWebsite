@@ -200,8 +200,11 @@ if (dropZone) {
             });
             
             if (response.ok) {
-                showNotification('Upload successful! Refreshing...', 'success');
-                setTimeout(() => location.reload(), 1000);
+                const data = await response.json();
+                showNotification('Upload successful!', 'success');
+                
+                // Add new image to gallery without reload
+                addImageToGallery(data.filename);
             } else {
                 const data = await response.json();
                 showNotification('Upload failed: ' + data.error, 'error');
@@ -290,12 +293,14 @@ async function saveImage(btn, filename) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
             },
             body: JSON.stringify({ filename, title, description })
         });
         
         if (response.ok) {
-            // Update stored values
+            // Update the data attributes with new values (prevents cache issues)
             titleEl.dataset.original = title;
             descEl.dataset.original = description;
             titleEl.setAttribute('contenteditable', 'false');
@@ -304,6 +309,10 @@ async function saveImage(btn, filename) {
             // Toggle buttons
             editBtn.style.display = 'block';
             adminActions.style.display = 'none';
+            
+            // Update lightbox onclick with new values
+            const img = item.querySelector('img');
+            img.setAttribute('onclick', `openLightbox('${img.src}', '${title.replace(/'/g, "\\'")}', '${description.replace(/'/g, "\\'")}')`);
             
             showNotification('Saved successfully!', 'success');
         } else {
@@ -362,8 +371,11 @@ async function uploadImage(input) {
         });
         
         if (response.ok) {
-            showNotification('Upload successful! Refreshing...', 'success');
-            setTimeout(() => location.reload(), 1000);
+            const data = await response.json();
+            showNotification('Upload successful!', 'success');
+            
+            // Add new image to gallery without reload
+            addImageToGallery(data.filename);
         } else {
             const data = await response.json();
             showNotification('Upload failed: ' + data.error, 'error');
@@ -373,6 +385,78 @@ async function uploadImage(input) {
     }
     
     input.value = '';
+}
+
+function addImageToGallery(filename) {
+    // Remove empty gallery message if it exists
+    const emptyGallery = document.querySelector('.empty-gallery');
+    if (emptyGallery) {
+        emptyGallery.remove();
+    }
+    
+    // Get or create gallery grid
+    let gallery = document.querySelector('.gallery-grid');
+    if (!gallery) {
+        gallery = document.createElement('div');
+        gallery.className = 'gallery-grid';
+        const container = document.querySelector('.pictures-section .container');
+        const dropZone = document.getElementById('dropZone');
+        if (dropZone) {
+            dropZone.insertAdjacentElement('afterend', gallery);
+        } else {
+            container.appendChild(gallery);
+        }
+    }
+    
+    // Create new gallery item
+    const imageUrl = `/data/pictures/${filename}`;
+    const galleryItem = document.createElement('div');
+    galleryItem.className = 'gallery-item';
+    galleryItem.setAttribute('data-filename', filename);
+    galleryItem.style.animation = 'fadeInUp 0.5s ease-out';
+    
+    galleryItem.innerHTML = `
+        <img src="${imageUrl}" 
+             alt="${filename}" 
+             loading="lazy"
+             onclick="openLightbox('${imageUrl}', '${filename}', '')">
+        
+        <div class="image-info">
+            <div class="image-title-wrapper">
+                <h3 class="image-title" data-original="${filename}">${filename}</h3>
+                <button class="icon-btn edit-btn" onclick="editImage(this, '${filename}')" title="Edit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="image-description" data-original=""></p>
+            
+            <div class="admin-actions" style="display: none;">
+                <button class="icon-btn save-btn" onclick="saveImage(this, '${filename}')" title="Save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </button>
+                <button class="icon-btn cancel-btn" onclick="cancelEdit(this)" title="Cancel">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <button class="icon-btn delete-btn" onclick="deleteImage(this, '${filename}')" title="Delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add to gallery at the beginning
+    gallery.insertBefore(galleryItem, gallery.firstChild);
 }
 
 function showNotification(message, type) {

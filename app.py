@@ -194,7 +194,12 @@ def update_metadata():
         return jsonify({'success': False, 'error': 'No filename provided'}), 400
     
     database.update_image_metadata(filename, title, description)
-    return jsonify({'success': True})
+    
+    response = jsonify({'success': True})
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
