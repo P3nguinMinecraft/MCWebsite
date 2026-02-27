@@ -1040,8 +1040,17 @@ body {
 }
 
 /* Notifications */
-.notification {
+#notification-container {
     position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 9999;
+}
+
+.notification {
     top: 2rem;
     right: 2rem;
     padding: 1rem 1.5rem;

@@ -8,7 +8,6 @@ from files import FileManager
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
-# Initialise file manager and database
 file = FileManager(app.root_path)
 database.init_db()
 
@@ -232,20 +231,20 @@ def api_save_custom():
 
 
 # ── Image API ─────────────────────────────────────────────────────────────────
-
 @app.route('/admin/upload', methods=['POST'])
 @login_required
 def upload_image():
     if 'file' not in request.files:
         return jsonify({'success': False, 'error': 'No file provided'}), 400
-    file = request.files['file']
-    if file.filename == '':
+
+    uploaded_file = request.files['file']
+    if uploaded_file.filename == '':
         return jsonify({'success': False, 'error': 'No file selected'}), 400
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+    if uploaded_file and allowed_file(uploaded_file.filename):
+        filename = secure_filename(uploaded_file.filename)
         filepath = os.path.join(file.get_pictures_dir(), filename)
-        # Avoid overwriting
+
         if os.path.exists(filepath):
             name, ext = os.path.splitext(filename)
             counter = 1
@@ -253,12 +252,12 @@ def upload_image():
                 filename = f"{name}_{counter}{ext}"
                 filepath = os.path.join(file.get_pictures_dir(), filename)
                 counter += 1
-        file.save(filepath)
+
+        uploaded_file.save(filepath)
         database.update_image_metadata(filename, filename, '')
         return jsonify({'success': True, 'filename': filename})
 
     return jsonify({'success': False, 'error': 'Invalid file type'}), 400
-
 
 @app.route('/admin/delete/<filename>', methods=['DELETE'])
 @login_required

@@ -230,20 +230,29 @@ async function uploadFile(file) {
     if (!file.type.startsWith('image/')) { showNotification('Only image files are allowed', 'error'); return; }
     const formData = new FormData();
     formData.append('file', file);
+
     try {
         showNotification('Uploading ' + file.name + '...', 'info');
         const response = await fetch('/admin/upload', { method: 'POST', body: formData });
-        if (response.ok) {
-            const data = await response.json();
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (_) {
+            data = { success: false, error: 'Upload failed: Session expired' };
+        }
+
+        if (response.ok && data.success) {
             showNotification('Upload successful!', 'success');
             allImages.unshift({ filename: data.filename, title: data.filename, description: '' });
             loadedCount++;
             addImageToGallery(data.filename, data.filename, '', true);
         } else {
-            const data = await response.json();
-            showNotification('Upload failed: ' + data.error, 'error');
+            showNotification('Upload failed: ' + (data.error || 'Unknown error'), 'error');
         }
-    } catch (error) { showNotification('Error: ' + error.message, 'error'); }
+    } catch (error) {
+        showNotification('Error: ' + error.message, 'error');
+    }
 }
 async function uploadImage(input) {
     if (!input.files || !input.files[0]) return;
@@ -271,10 +280,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 function showNotification(message, type) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
     const n = document.createElement('div');
     n.className = `notification notification-${type}`;
     n.textContent = message;
-    document.body.appendChild(n);
+    container.appendChild(n);
+
+    n.style.marginBottom = '0.5em';
+
     setTimeout(() => n.classList.add('show'), 10);
-    setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 3000);
+    setTimeout(() => {
+        n.classList.remove('show');
+        setTimeout(() => n.remove(), 300);
+    }, 3000);
 }
