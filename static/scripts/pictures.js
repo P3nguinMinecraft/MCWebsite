@@ -253,6 +253,11 @@ async function uploadImage(input) {
 
 // ── Drag & drop ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() { uploadImage(this); });
+    }
+
     const dropZone = document.getElementById('dropZone');
     if (!dropZone) return;
     ['dragenter','dragover','dragleave','drop'].forEach(e => {

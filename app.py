@@ -3,31 +3,28 @@ import os
 from werkzeug.utils import secure_filename
 from functools import wraps
 import database
+from files import FileManager
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
-CONFIG = {
-    'server_name': 'Minecraft Server',
-    'server_ip': 'mason.run.place',
-    'discord_invite': 'https://discord.gg/VD5F5sSUTH',
-    'allowed_extensions': {'png', 'jpg', 'jpeg', 'gif', 'webp'},
-    'max_file_size': 20 * 1024 * 1024,  # 20 MB
-    'directories': {
-        'pictures': 'data/pictures',
-        'mods': 'static/mods.txt'
-    }
-}
-
+# Initialise file manager and database
+file = FileManager(app.root_path)
 database.init_db()
 
+
+def get_config():
+    """Load config from data/config.json"""
+    return file.load_config()
+
+
 def allowed_file(filename):
-    """Check if file extension is allowed"""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in CONFIG['allowed_extensions']
+    config = get_config()
+    exts = set(e.lower() for e in config.get('allowed_extensions', ['png','jpg','jpeg','gif','webp']))
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in exts
+
 
 def login_required(f):
-    """Decorator to require admin login"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'admin_logged_in' not in session:
@@ -35,68 +32,76 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+def replace_tokens(value, config):
+    """Replace {ip} and {name} tokens in info row values"""
+    return (value
+            .replace('{ip}', config.get('server_ip', ''))
+            .replace('{name}', config.get('server_name', '')))
+
+
+# ── Public routes ─────────────────────────────────────────────────────────────
+
 @app.route('/')
 def home():
-    return render_template('home.html', config=CONFIG)
+    return render_template('home.html', config=get_config())
 
-def load_mods():
-    """Load mods from static/mods.txt file"""
-    mods = []
-    mods_file = os.path.join(app.root_path, CONFIG['directories']['mods'])
-    
-    if os.path.exists(mods_file):
-        with open(mods_file, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    parts = line.rsplit(' ', 1)
-                    if len(parts) == 2:
-                        mods.append({'name': parts[0], 'version': parts[1]})
-                    else:
-                        mods.append({'name': line, 'version': ''})
-    
-    return mods
 
 @app.route('/discord')
 def discord():
-    """Redirect to Discord server"""
-    return redirect(CONFIG['discord_invite'])
+    return redirect(get_config().get('discord_invite', '/'))
+
 
 @app.route('/data/pictures/<filename>')
 def serve_picture(filename):
-    """Serve images from data/pictures directory"""
-    pictures_path = os.path.join(app.root_path, 'data', 'pictures')
-    return send_from_directory(pictures_path, filename)
+    return send_from_directory(file.get_pictures_dir(), filename)
+
 
 @app.route('/about')
 def about():
-    mods = load_mods()
-    return render_template('about.html', config=CONFIG, mods=mods)
+    config = get_config()
+    details = file.load_details()
+    mods_txt    = file.load_mods()
+    custom = file.load_custom()
+
+    details = {
+        'info_rows': [
+            {'label': row['label'], 'value': replace_tokens(row['value'], config)}
+            for row in details.get('info_rows', [])
+        ]
+    }
+
+    mods = []
+    for line in mods_txt.splitlines():
+        line = line.strip()
+        if line:
+            parts = line.rsplit(' ', 1)
+            mods.append({'name': parts[0], 'version': parts[1] if len(parts) == 2 else ''})
+
+    return render_template('about.html', config=config, details=details, mods=mods, custom=custom)
+
 
 @app.route('/pictures')
 def pictures():
-    """Get all image files from the pictures folder"""
-    pictures_path = os.path.join(app.root_path, CONFIG['directories']['pictures'])
-    if os.path.exists(pictures_path):
-        filenames = [f for f in os.listdir(pictures_path) if allowed_file(f.lower())]
-        images = []
-        for filename in filenames:
-            metadata = database.get_image_metadata(filename)
-            images.append({
-                'filename': filename,
-                'title': metadata['title'] or filename,
-                'description': metadata['description'] or ''
-            })
-    else:
-        images = []
-    
-    is_admin = 'admin_logged_in' in session
-    return render_template('pictures.html', config=CONFIG, images=images, is_admin=is_admin)
+    config      = get_config()
+    pics_dir    = file.get_pictures_dir()
+    images      = []
 
-@app.route('/admin')
-@login_required
-def admin_panel():
-    return render_template('admin.html', config=CONFIG)
+    if os.path.exists(pics_dir):
+        for filename in os.listdir(pics_dir):
+            if allowed_file(filename):
+                meta = database.get_image_metadata(filename)
+                images.append({
+                    'filename':    filename,
+                    'title':       meta['title'] or filename,
+                    'description': meta['description'] or ''
+                })
+
+    is_admin = 'admin_logged_in' in session
+    return render_template('pictures.html', config=config, images=images, is_admin=is_admin)
+
+
+# ── Auth routes ───────────────────────────────────────────────────────────────
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -105,115 +110,181 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
         if database.verify_admin(username, password):
             session['admin_logged_in'] = True
-            session['admin_username'] = username
-            flash('Successfully logged in!', 'success')
+            session['admin_username']  = username
             return redirect(url_for('admin_panel'))
-        else:
-            flash('Invalid credentials. Please try again.', 'error')
-    
-    return render_template('admin_login.html', config=CONFIG)
+        flash('Invalid credentials. Please try again.', 'error')
+    return render_template('admin_login.html', config=get_config())
+
 
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin_logged_in', None)
     session.pop('admin_username', None)
-    flash('Successfully logged out.', 'success')
     return redirect(url_for('pictures'))
+
 
 @app.route('/admin/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
+    config = get_config()
     if request.method == 'POST':
-        current_password = request.form.get('current_password')
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
-        
+        current  = request.form.get('current_password')
+        new_pw   = request.form.get('new_password')
+        confirm  = request.form.get('confirm_password')
         username = session.get('admin_username')
-        
-        if not database.verify_admin(username, current_password):
+
+        if not database.verify_admin(username, current):
             flash('Current password is incorrect.', 'error')
-            return render_template('change_password.html', config=CONFIG)
-        
-        if new_password != confirm_password:
+        elif new_pw != confirm:
             flash('New passwords do not match.', 'error')
-            return render_template('change_password.html', config=CONFIG)
-        
-        if len(new_password) < 4:
-            flash('Password must be at least 4 characters long.', 'error')
-            return render_template('change_password.html', config=CONFIG)
-        
-        if database.change_password(username, new_password):
+        elif len(new_pw) < 4:
+            flash('Password must be at least 4 characters.', 'error')
+        elif database.change_password(username, new_pw):
             flash('Password changed successfully!', 'success')
-            return redirect(url_for('pictures'))
+            return redirect(url_for('admin_panel'))
         else:
             flash('Failed to change password.', 'error')
-    
-    return render_template('change_password.html', config=CONFIG)
+    return render_template('change_password.html', config=config)
+
+
+# ── Admin panel ───────────────────────────────────────────────────────────────
+
+@app.route('/admin')
+@login_required
+def admin_panel():
+    return render_template('admin.html', config=get_config())
+
+
+# ── Admin data API ────────────────────────────────────────────────────────────
+
+@app.route('/admin/api/config', methods=['GET'])
+@login_required
+def api_get_config():
+    return jsonify(file.load_config())
+
+
+@app.route('/admin/api/config', methods=['POST'])
+@login_required
+def api_save_config():
+    data = request.json or {}
+    # Validate / coerce fields
+    config = {
+        'server_name':       str(data.get('server_name', 'Minecraft Server')),
+        'server_ip':         str(data.get('server_ip', '')),
+        'discord_invite':    str(data.get('discord_invite', '')),
+        'allowed_extensions': [str(e).lower() for e in data.get('allowed_extensions', ['png','jpg','jpeg','gif','webp'])],
+        'max_file_size':     int(data.get('max_file_size', 20)),
+        'file_size_unit':    str(data.get('file_size_unit', 'MB')).upper(),
+    }
+    file.save_config(config)
+    return jsonify({'success': True})
+
+
+@app.route('/admin/api/details', methods=['GET'])
+@login_required
+def api_get_details():
+    return jsonify(file.load_details())
+
+
+@app.route('/admin/api/details', methods=['POST'])
+@login_required
+def api_save_details():
+    data = request.json or {}
+    rows = [{'label': str(r.get('label','')), 'value': str(r.get('value',''))}
+            for r in data.get('info_rows', [])]
+    file.save_details({'info_rows': rows})
+    return jsonify({'success': True})
+
+
+@app.route('/admin/api/mods', methods=['GET'])
+@login_required
+def api_get_mods():
+    return jsonify({'content': file.load_mods()})
+
+
+@app.route('/admin/api/mods', methods=['POST'])
+@login_required
+def api_save_mods():
+    data = request.json or {}
+    file.save_mods(data.get('content', ''))
+    return jsonify({'success': True})
+
+
+@app.route('/admin/api/custom', methods=['GET'])
+@login_required
+def api_get_custom():
+    return jsonify(file.load_custom())
+
+
+@app.route('/admin/api/custom', methods=['POST'])
+@login_required
+def api_save_custom():
+    data = request.json or {}
+    sections = []
+    for s in data.get('sections', []):
+        rows = [{'label': str(r.get('label','')), 'value': str(r.get('value',''))}
+                for r in s.get('rows', [])]
+        sections.append({'name': str(s.get('name','')), 'rows': rows})
+    file.save_custom({'sections': sections})
+    return jsonify({'success': True})
+
+
+# ── Image API ─────────────────────────────────────────────────────────────────
 
 @app.route('/admin/upload', methods=['POST'])
 @login_required
 def upload_image():
     if 'file' not in request.files:
         return jsonify({'success': False, 'error': 'No file provided'}), 400
-    
     file = request.files['file']
-    
     if file.filename == '':
         return jsonify({'success': False, 'error': 'No file selected'}), 400
-    
+
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.root_path, CONFIG['directories']['pictures'], filename)
-        
+        filepath = os.path.join(file.get_pictures_dir(), filename)
+        # Avoid overwriting
         if os.path.exists(filepath):
             name, ext = os.path.splitext(filename)
             counter = 1
             while os.path.exists(filepath):
                 filename = f"{name}_{counter}{ext}"
-                filepath = os.path.join(app.root_path, CONFIG['directories']['pictures'], filename)
+                filepath = os.path.join(file.get_pictures_dir(), filename)
                 counter += 1
-        
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         file.save(filepath)
         database.update_image_metadata(filename, filename, '')
-        
         return jsonify({'success': True, 'filename': filename})
-    
+
     return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+
 
 @app.route('/admin/delete/<filename>', methods=['DELETE'])
 @login_required
 def delete_image(filename):
-    filepath = os.path.join(app.root_path, CONFIG['directories']['pictures'], filename)
-    
+    filepath = os.path.join(file.get_pictures_dir(), filename)
     if os.path.exists(filepath):
         os.remove(filepath)
         database.delete_image_metadata(filename)
         return jsonify({'success': True})
-    
     return jsonify({'success': False, 'error': 'File not found'}), 404
+
 
 @app.route('/admin/update-metadata', methods=['POST'])
 @login_required
 def update_metadata():
-    data = request.json
-    filename = data.get('filename')
-    title = data.get('title')
+    data = request.json or {}
+    filename    = data.get('filename')
+    title       = data.get('title')
     description = data.get('description')
-    
     if not filename:
         return jsonify({'success': False, 'error': 'No filename provided'}), 400
-    
     database.update_image_metadata(filename, title, description)
-    
-    response = jsonify({'success': True})
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    resp = jsonify({'success': True})
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)

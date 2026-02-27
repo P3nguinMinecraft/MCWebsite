@@ -3,6 +3,8 @@
     --color-stone: #78909c;
     --color-dirt: #8d6e63;
     --color-diamond: #4fc3f7;
+    --color-emerald: #2ecc71;
+    --color-deepslate: #1f2428;
     --color-lava: #ff5722;
     --color-dark: #1a1a2e;
     --color-darker: #0f0f1a;
@@ -116,7 +118,7 @@ body {
 
 .nav-link.active {
     background: var(--color-grass);
-    color: var(--color-diamond);
+    color: var(--color-black);
 }
 
 .discord-link {
@@ -347,7 +349,7 @@ body {
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 2rem;
     animation: fadeInUp 0.8s ease-out 0.2s both;
 }
@@ -367,7 +369,6 @@ body {
 }
 
 .primary-info {
-    grid-column: span 2;
     border-color: var(--color-grass);
     background: rgba(124, 179, 66, 0.05);
 }
@@ -621,6 +622,10 @@ body {
     
     .primary-info {
         grid-column: span 1;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
     }
     
     .gallery-grid {
@@ -1181,6 +1186,255 @@ body {
 
 /* Admin nav link accent */
 .nav-link-admin {
-    color: var(--color-primary, #7cb342) !important;
+    color: var(--color-emerald) !important;
     font-weight: 700;
 }
+
+.nav-link-admin.activeadmin {
+    background: var(--color-deepslate) !important;
+}
+
+/* ── Admin panel placeholder removal ───────────────────────────────────────── */
+.admin-placeholder { display: none; }
+
+/* ── Admin tabs ─────────────────────────────────────────────────────────────── */
+.admin-tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.admin-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    color: rgba(245,245,245,0.55);
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+.admin-tab-btn:hover { color: var(--color-light); }
+.admin-tab-btn.active {
+    color: var(--color-grass);
+    border-bottom-color: var(--color-grass);
+}
+.admin-tab-pane { display: none; }
+.admin-tab-pane.active { display: block; }
+
+/* ── Tab pane header ────────────────────────────────────────────────────────── */
+.tab-pane-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+}
+.tab-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+.tab-desc {
+    font-size: 0.88rem;
+    opacity: 0.55;
+    max-width: 55ch;
+    line-height: 1.5;
+}
+.token {
+    background: rgba(79,195,247,0.15);
+    color: var(--color-diamond);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+}
+
+/* ── Save primary button ────────────────────────────────────────────────────── */
+.save-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    background: var(--color-grass);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.save-btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.save-btn-primary:active { transform: translateY(0); }
+
+/* ── Shared editor inputs ───────────────────────────────────────────────────── */
+.editor-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: var(--color-light);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    padding: 0.55rem 0.85rem;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+}
+.editor-input:focus {
+    outline: none;
+    border-color: var(--color-grass);
+    background: rgba(255,255,255,0.09);
+}
+.editor-input::placeholder { opacity: 0.4; }
+.editor-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: var(--color-light);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+}
+.editor-select:focus { outline: none; border-color: var(--color-grass); }
+.editor-select option { background: #1a1a2e; }
+
+/* ── Icon button (delete row etc.) ─────────────────────────────────────────── */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    color: rgba(245,245,245,0.6);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+.icon-btn:hover { background: rgba(239,83,80,0.15); border-color: #ef5350; color: #ef5350; }
+.delete-row-btn:hover, .delete-section-btn:hover { color: #ef5350; border-color: #ef5350; background: rgba(239,83,80,0.12); }
+
+/* ── Add row / section buttons ──────────────────────────────────────────────── */
+.add-row-btn, .add-section-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: rgba(245,245,245,0.6);
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    margin-top: 0.75rem;
+}
+.add-row-btn:hover, .add-section-btn:hover {
+    border-color: var(--color-grass);
+    color: var(--color-grass);
+    background: rgba(124,179,66,0.07);
+}
+.add-section-btn { padding: 0.6rem 1.25rem; font-size: 0.92rem; }
+
+/* ── Info row editor ────────────────────────────────────────────────────────── */
+.editor-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+.info-row-editor {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 0.6rem;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    transition: border-color 0.2s;
+}
+.info-row-editor:hover { border-color: rgba(255,255,255,0.12); }
+
+/* ── Mods textarea ──────────────────────────────────────────────────────────── */
+.mods-textarea {
+    width: 100%;
+    min-height: 420px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--color-light);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    padding: 1rem 1.25rem;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+.mods-textarea:focus { outline: none; border-color: var(--color-grass); }
+
+/* ── Custom sections ────────────────────────────────────────────────────────── */
+.custom-sections-list { display: flex; flex-direction: column; gap: 1rem; }
+.custom-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1rem 1.1rem 0.85rem;
+}
+.custom-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+.section-name-input {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    padding-left: 0.25rem !important;
+    flex: 1;
+}
+.section-name-input:focus { border-color: var(--color-grass) !important; background: rgba(255,255,255,0.05) !important; }
+.custom-section-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+.custom-section .add-row-btn { margin-top: 0.6rem; }
+
+/* ── Config grid ────────────────────────────────────────────────────────────── */
+.config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+@media (max-width: 640px) { .config-grid { grid-template-columns: 1fr; } }
+.config-field-full { grid-column: 1 / -1; }
+.config-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+    margin-bottom: 0.45rem;
+}
+.file-size-row { display: flex; gap: 0.6rem; }
+.file-size-input { flex: 1; }
+.cfgSizeUnit { width: 80px; flex-shrink: 0; }
+.ext-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.ext-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.ext-input { font-family: var(--font-mono) !important; }

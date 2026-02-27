@@ -23,7 +23,7 @@
                 <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
                 <a href="{{ url_for('pictures') }}" class="nav-link {% if request.endpoint == 'pictures' %}active{% endif %}">Pictures</a>
                 {% if session.get('admin_logged_in') %}
-                <a href="{{ url_for('admin_panel') }}" class="nav-link nav-link-admin {% if request.endpoint == 'admin_panel' %}active{% endif %}">Admin</a>
+                <a href="{{ url_for('admin_panel') }}" class="nav-link nav-link-admin {% if request.endpoint == 'admin_panel' %}activeadmin{% endif %}">Admin</a>
                 {% endif %}
                 <a href="{{ url_for('discord') }}" class="discord-link" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">

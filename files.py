@@ -4,7 +4,6 @@ Handles validation, creation, and access to data files
 """
 import os
 import json
-from pathlib import Path
 
 class FileManager:
     def __init__(self, root_path):
@@ -34,8 +33,8 @@ class FileManager:
         """Get mods.txt path"""
         return os.path.join(self.info_dir, 'mods.txt')
     
-    def get_custom_info_path(self):
-        """Get custom info path"""
+    def get_custom_path(self):
+        """Get custom path"""
         return os.path.join(self.info_dir, 'custom.json')
     
     def load_config(self):
@@ -110,9 +109,9 @@ class FileManager:
         with open(self.get_mods_path(), 'w') as f:
             f.write(content)
     
-    def load_custom_info(self):
-        """Load custom info sections"""
-        custom_path = self.get_custom_info_path()
+    def load_custom(self):
+        """Load custom sections"""
+        custom_path = self.get_custom_path()
         default_custom = {
             'sections': [
             ]
@@ -125,10 +124,10 @@ class FileManager:
             except:
                 pass
         
-        self.save_custom_info(default_custom)
+        self.save_custom(default_custom)
         return default_custom
     
-    def save_custom_info(self, custom_info):
+    def save_custom(self, custom_info):
         """Save custom info"""
-        with open(self.get_custom_info_path(), 'w') as f:
+        with open(self.get_custom_path(), 'w') as f:
             json.dump(custom_info, f, indent=2)
