@@ -168,6 +168,14 @@ def upload_image():
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.root_path, CONFIG['directories']['pictures'], filename)
         
+        if os.path.exists(filepath):
+            name, ext = os.path.splitext(filename)
+            counter = 1
+            while os.path.exists(filepath):
+                filename = f"{name}_{counter}{ext}"
+                filepath = os.path.join(app.root_path, CONFIG['directories']['pictures'], filename)
+                counter += 1
+        
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         file.save(filepath)
         database.update_image_metadata(filename, filename, '')
